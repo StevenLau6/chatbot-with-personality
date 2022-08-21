@@ -67,8 +67,16 @@ def get_response(request):
 
     # response generation
     generator_dict={}
+    
+    # only finetuned on PELD
     generator_dict['model_name']='t5_base_PELD'
-    generator_dict['model_path']="/home/disk1/data/shuaiqi/emo_response_gen/model/t5_base/PELD/checkpoint-3906"
+    generator_dict['model_path']="/home/disk1/data/guest01/emo_response_gen/model/t5_base/PELD/checkpoint-3906"
+    # only finetuned on DailyDialog
+    #generator_dict['model_name']='t5_base_DailyDialog'
+    #generator_dict['model_path']="/home/disk1/data/guest01/emo_response_gen/model/t5_base/DailyDialog/checkpoint-47500"
+    # finetuned on DailyDialog and PELD
+    #generator_dict['model_name']='t5_base_DailyDialog_PELD'
+    #generator_dict['model_path']="/home/disk1/data/guest01/emo_response_gen/model/t5_base/DailyDialog_PELD/checkpoint-2604"
 
     emo_generator = emotional_response_gen(generator_dict,device = "cuda:1" )
 
