@@ -36,12 +36,11 @@ class emotional_response_gen(object):
         self.generator_name = generator_dict['model_name'] 
         self.generator_model_path = generator_dict['model_path']
         #self.input_text = input_text
-        #self.section_name = section_name
-        #self.summarizer_name = summarizer_name
+        
         #self.output_len = output_len
         #self.input_truncate_len = input_len
         if "t5_base" in self.generator_name:
-            #pdb.set_trace()
+            
             self.tokenizer = T5Tokenizer.from_pretrained(self.generator_model_path)
             self.model = T5ForConditionalGeneration.from_pretrained(self.generator_model_path).to(self.torch_device)
 
