@@ -24,13 +24,29 @@ import traceback
 #from personality_chatbot.response_gen import emotional_response_gen
 from .response_gen import emotional_response_gen
 
+#from transformers import BertTokenizer, BertConfig, BertForSequenceClassification
+from transformers import AdamW, get_linear_schedule_with_warmup
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import pdb
+
 OUTPUT_MAX_LEN=70
 OUTPUT_MIN_LEN=1
 INPUT_MAX_LENGTH = 128
 
+bert_emotion_tokenizer = AutoTokenizer.from_pretrained("/home/zhiyuan/aaai'23/src/bert_emotion_classification")  #bert_emotion_classification
+bert_emotion_model = AutoModelForSequenceClassification.from_pretrained("/home/zhiyuan/aaai'23/src/bert_emotion_classification", num_labels=6)   #"bert_emotion_classification"
 
-def emotionInferenceBERT(input_str):
-    return "joy"
+
+def emotionInferenceBERT(input_sentence,bert_tokenizer,bert_model):
+    inputs = bert_tokenizer(input_sentence, return_tensors = "pt")
+    outputs = bert_model(**inputs)
+    label_idx = torch.argmax(outputs[0]).item()
+    emotion_mapping = {4: "sadness", 2: "joy", 1: "fear", 0: "anger", 5: "surprise", 3: "love"}
+    #print(label_idx)
+    #pdb.set_trace()
+    return emotion_mapping[label_idx]
+    
 
 def chatbot_emotion_gen(input_str):
     return "joy"
@@ -43,7 +59,8 @@ def get_response(request):
     #nput_emotion = request.POST.get('emotion')
 
     # user emotion classification
-    input_emotion = emotionInferenceBERT(input_str)
+    #input_emotion = emotionInferenceBERT(input_str)
+    input_emotion = emotionInferenceBERT(input_str,bert_emotion_tokenizer,bert_emotion_model)
 
     # chatbot emotion predict
     response_emotion = chatbot_emotion_gen(input_str)
@@ -58,10 +75,11 @@ def get_response(request):
     response_text = emo_generator.response_generate(input_str, emotion = response_emotion, personality = input_personality, output_max_len=OUTPUT_MAX_LEN, output_min_len=OUTPUT_MIN_LEN, input_max_length = INPUT_MAX_LENGTH)
 
     response_dict = {}
+    response_dict["input_str"] = input_str
     response_dict["response_text"] = response_text
     response_dict["response_emotion"] = response_emotion
     response_dict["input_emotion"] = input_emotion
-    #print(response_dict)
+    print(response_dict)
     response_json = json.dumps(response_dict)
 
     return HttpResponse(response_json)

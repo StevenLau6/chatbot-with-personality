@@ -13,6 +13,7 @@
 import torch
 import re
 from transformers import Trainer, TrainingArguments
+from transformers import T5Tokenizer, T5ForConditionalGeneration#, Trainer, TrainingArguments
 
 import pdb
 
@@ -32,7 +33,7 @@ class emotional_response_gen(object):
         self.generator_dict = generator_dict
         #self.torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.torch_device = device if torch.cuda.is_available() else 'cpu'
-        self.generator_name = generator_dict['model_name']
+        self.generator_name = generator_dict['model_name'] 
         self.generator_model_path = generator_dict['model_path']
         #self.input_text = input_text
         #self.section_name = section_name
@@ -41,9 +42,6 @@ class emotional_response_gen(object):
         #self.input_truncate_len = input_len
         if "t5_base" in self.generator_name:
             #pdb.set_trace()
-
-            from transformers import T5Tokenizer, T5ForConditionalGeneration#, Trainer, TrainingArguments
-
             self.tokenizer = T5Tokenizer.from_pretrained(self.generator_model_path)
             self.model = T5ForConditionalGeneration.from_pretrained(self.generator_model_path).to(self.torch_device)
 
